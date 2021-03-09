@@ -1,21 +1,25 @@
 package jm.task.core.jdbc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-@Table
+//аннотация Entity указывает на то, что объекты нашего класса будут являться сущностями
+//и их можно спокойно переносить из пиложения в базу данных и обратно
+@Entity
+//@Table (name = "users")
+@Table (name = "User5")
 public class User {
     @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column
+    @Column (name = "name")
     private String name;
 
-    @Column
+    @Column (name = "lastName")
     private String lastName;
 
-    @Column
+    @Column (name = "age")
     private Byte age;
 
     public User() {
@@ -59,4 +63,11 @@ public class User {
     public void setAge(Byte age) {
         this.age = age;
     }
+
+    @Override
+    public String toString() {
+        return "User [id = " + id + ", name = " + name + ", lastName = "
+                + lastName  + ", age =  " + age + "]" + "\n";
+    }
+
 }

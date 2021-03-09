@@ -1,14 +1,16 @@
 package jm.task.core.jdbc.util;
 
+import com.fasterxml.classmate.AnnotationConfiguration;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+//import org.springframework.context.annotation.Configuration;
+import org.hibernate.service.Service;
+import org.hibernate.service.ServiceRegistry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -19,126 +21,50 @@ import java.util.Properties;
 
 
 
-@PropertySource(value = { "classpath:application.properties" })
-@Configuration
+//@PropertySource(value = { "classpath:application.properties" })
+//@Configuration
 @EnableTransactionManagement
 public class Util {
     // реализуйте настройку соеденения с БД
+    
+ private static SessionFactory sessionFactory;
 
+public SessionFactory getSessionFactory (){
+    if (sessionFactory == null){
+        try {
+            Properties properties = new Properties();
+            properties.put(Environment.URL, "jdbc:mysql://localhost:3306/test?serverTimezone=UTC");
+            properties.put(Environment.USER, "root");
+            properties.put(Environment.PASS, "1");
+            properties.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
+            properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+            properties.put(Environment.SHOW_SQL, "thrue");
 
-    @Value("${jdbc.driverClassName}")
-    private String driverClass;
-    @Value("${jdbc.url}")
-    private String url;
-    @Value("${jdbc.username}")
-    private String username;
-    @Value("${jdbc.password}")
-    private String password;
-    @Value("${hibernate.dialect}")
-    private String dialect;
+            //создаем подключение к базе данных, создаётся одно подключение на программу, но не под каждый запрос
+            Configuration configuration = new Configuration().setProperties(properties);
+            configuration.addAnnotatedClass(jm.task.core.jdbc.model.User.class);
 
-    @Bean
-    public DataSource getDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource(url, username, password);
-        dataSource.setDriverClassName(driverClass);
-        return dataSource;
+            StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties()).build();
+
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+
+//            SessionFactory sessionFactory = new Configuration().addProperties(properties).buildSessionFactory();
+//            Session session = sessionFactory.getCurrentSession();
+            System.out.println("Connection succes (Соединение с базой установлено!)");
+//            session.beginTransaction();
+
+              
+
+//              session.getTransaction();
+        }catch (Exception e){
+            System.out.println("Connection error");
+            e.printStackTrace();
+        }
     }
+      return sessionFactory;
+}
 
-    @Bean
-    public LocalSessionFactoryBean sessionFactory() {
-        LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
-        factory.setDataSource(getDataSource());
-        factory.setHibernateProperties(hibernateProperties());
-        factory.setPackagesToScan(new String[] { "com.javatechie.spring.orm.api.model" });
-        return factory;
-    }
-
-    private Properties hibernateProperties() {
-        Properties properties = new Properties();
-        properties.put("hibernate.dialect", dialect);
-        properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.show_sql", "true");
-        properties.put("hibernate.format_sql", "true");
-        return properties;
-    }
-
-    @Bean
-    @Autowired
-    public HibernateTransactionManager transactionManager(SessionFactory factory) {
-        HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-        transactionManager.setSessionFactory(factory);
-        return transactionManager;
-    }
-
-
-
-//    // Свойства источника данных
-//    @Value("${com.mysql.jdbc.Driver}")
-//    private String driverClassName;
-//    @Value("${jdbc:mysql://localhost:3306/test?serverTimezone=UTC}")
-//    private String url;
-//    @Value("${root}")
-//    private String username;
-//    @Value("${1}")
-//    private String password;
-//
-//    /**
-//     * Компонент источника данных
-//     */
-//    @Bean
-//    public DataSource dataSource() {
-//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setDriverClassName(driverClassName);
-//        dataSource.setUrl(url);
-//        dataSource.setUsername(username);
-//        dataSource.setPassword(password);
-//        return dataSource;
-//    }
-//
-//    // Свойства Hibernate
-//    @Value("${hibernate.dialect}")
-//    private String hibernateDialect;
-//    @Value("${hibernate.show_sql}")
-//    private String hibernateShowSql;
-//    @Value("${hibernate.hbm2ddl.auto}")
-//    private String hibernateHBM2DDLAuto;
-//
-//    /**
-//     * Свойства Hibernate в виде объекта класса Properties
-//     */
-//    @Bean
-//    public Properties hibernateProperties() {
-//        Properties properties = new Properties();
-//        properties.put("hibernate.dialect", hibernateDialect);
-//        properties.put("hibernate.show_sql", hibernateShowSql);
-//        properties.put("hibernate.hbm2ddl.auto", hibernateHBM2DDLAuto);
-//        return properties;
-//    }
-//
-//    /**
-//     * Фабрика сессий Hibernate: sessionFactory — для создания сессий, с помощью которых осуществляются операции
-//     * с объектами-сущностями. Здесь мы устанавливаем источник данных, свойства Hibernate
-//     * и в каком пакете нужно искать классы-сущности.
-//     */
-//    @Bean
-//    @SuppressWarnings("deprecation")
-//    public SessionFactory sessionFactory() {
-//        return new LocalSessionFactoryBuilder(dataSource())
-//                .scanPackages("jm.task.core.jdbc.util")
-//                .addProperties(hibernateProperties())
-//                // используем устаревший метод, так как Spring не оставляет нам выбора
-//                .buildSessionFactory();
-//    }
-//
-//    /**
-//     * Менеджер транзакций: transactionManager — для настройки менеджера транзакций.
-//     */
-//    @Bean
-//    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
-//        HibernateTransactionManager hiberTranzMng = new HibernateTransactionManager();
-//        hiberTranzMng.setSessionFactory(sessionFactory);
-//        return hiberTranzMng;
-//    }
 
 
 

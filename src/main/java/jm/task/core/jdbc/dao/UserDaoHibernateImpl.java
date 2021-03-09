@@ -1,10 +1,9 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.query.NativeQuery;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -14,41 +13,38 @@ public class UserDaoHibernateImpl implements UserDao {
     public UserDaoHibernateImpl() {
     }
 
-    private SessionFactory sessionFactory;
-
-    @Autowired
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
     @Override
-    @SuppressWarnings("unchecked")
-    public List<User> getAllUsers() {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from test.users").list();
-//        return getSession().createQuery("from test.users").list();
-//        return sessionFactory.getCurrentSession().createQuery("from test").list();
-//        return session.createQuery("from test.users").list();
+    public List<User> getAllUsers(){
+        Session session = new Util().getSessionFactory().openSession();
+        session.beginTransaction();
+        return session.createQuery("from jm.task.core.jdbc.model.User").list();
     }
 
-
-//    public void setSessionFactory(org.hibernate.SessionFactory sessionFactory) {
-//        this.sessionFactory = sessionFactory;
-//    }
-
-
-//    public UserDaoHibernateImpl(SessionFactory sessionFactory) {
-//        this.sessionFactory = sessionFactory;
-//    }
 
     @Override
     public void createUsersTable() {
+        NativeQuery query;
+        try (Session session = new Util().getSessionFactory().openSession()) {
+            session.beginTransaction();
+            query = session.createNativeQuery("create table test.User5 (id MEDIUMINT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id), name varchar(256), lastName varchar(256), age int (16))");
+        }
+        query.executeUpdate();
+        System.out.println("Таблица готова!!!");
 
     }
 
     @Override
     public void dropUsersTable() {
-
+//        DROP DATABASE your_database;
+        NativeQuery query;
+        try (Session session = new Util().getSessionFactory().openSession()) {
+            session.beginTransaction();
+            query = session.createNativeQuery("DROP TABLE IF EXISTS test.User5");
+        }
+//        Необходимо обновить запрос: query.executeUpdate(). При каких-то изменениях в таблице запрос
+//        следует обновлять, а, скажем, при получении данных из таблицы без её изменения
+//        запрос обновлять не нужно
+        query.executeUpdate();
     }
 
     @Override
@@ -58,12 +54,17 @@ public class UserDaoHibernateImpl implements UserDao {
         user.setName(name);
         user.setLastName(lastName);
         user.setAge(age);
-        sessionFactory.getCurrentSession().save(user);
+        Session session = new Util().getSessionFactory().openSession();
+        session.beginTransaction();
+        session.save(user);
+        session.getTransaction().commit();
+        session.close();
+//        sessionFactory.getCurrentSession().save(user);
 //        getSession().save(user);
 //        sessionFactory.getCurrentSession().saveOrUpdate(user);
 //        Transaction transaction = null;
 
-//        Session session = sessionFactory.getCurrentSession();
+//        Session session = sessionbbFyactory.getCurrentSession();
 //        session.persist();
 //        transaction = session.beginTransaction();
 //        session.save(user);
@@ -73,11 +74,20 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void removeUserById(long id) {
-
+        Session session = new Util().getSessionFactory().openSession();
+        session.beginTransaction();
+        User user = session.get(User.class, id);
+        session.delete(user);
+        session.close();
     }
 
     @Override
     public void cleanUsersTable() {
-
+        NativeQuery query;
+        Session session = new Util().getSessionFactory().openSession();
+            session.beginTransaction();
+            query = session.createNativeQuery("delete from User5");
+        System.out.println("Произведено удаление данных из таблицы");
+        query.executeUpdate();
     }
 }
