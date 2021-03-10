@@ -37,7 +37,7 @@ public SessionFactory getSessionFactory (){
             properties.put(Environment.USER, "root");
             properties.put(Environment.PASS, "1");
             properties.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
-            properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+            properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
             properties.put(Environment.SHOW_SQL, "thrue");
 
             //создаем подключение к базе данных, создаётся одно подключение на программу, но не под каждый запрос

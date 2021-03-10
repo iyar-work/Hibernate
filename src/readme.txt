@@ -195,3 +195,12 @@ public class HibernateConfig {
 
 
 https://www.youtube.com/watch?v=emg94BI2Jao&t=4317s
+
+
+
+git init
+ git add --all
+ git commit -m "Initial commit"
+ git remote add hibernate_begin https://github.com/iyar-work/Hibernate_begin
+git remote
+git push hibernate_begin master

@@ -14,9 +14,12 @@ public class Main {
 //        System.out.println(userService.getAllUsers());
 //        userService.createUsersTable();
 //        userService.dropUsersTable();
-//        userService.saveUser("Саня10", "Диманов20", (byte) 370);
-//        userService.removeUserById(2);
-        userService.cleanUsersTable();
+//        System.out.println(userService.getAllUsers());
+//        for (int i = 0; i < 5; i++) {
+//            userService.saveUser("Саня10", "Диманов20", (byte) 370);
+//        }
+        userService.removeUserById(9);
+//        userService.cleanUsersTable();
 
 //        conn.connect();
 //        userService.createUsersTable();
