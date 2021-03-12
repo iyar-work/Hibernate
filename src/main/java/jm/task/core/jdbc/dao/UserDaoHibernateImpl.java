@@ -63,7 +63,7 @@ public class UserDaoHibernateImpl implements UserDao {
             session.getTransaction().commit();
             session.getTransaction().commit();
         }catch (RuntimeException e){
-            if (transaction != null) {
+            if (transaction == null) {
                 // откат транзакции
                 transaction.rollback();
             }
@@ -82,7 +82,7 @@ public class UserDaoHibernateImpl implements UserDao {
             session.delete(user);
             session.getTransaction().commit();
         }catch (RuntimeException e){
-            if (transaction != null) {
+            if (transaction == null) {
                 // откат транзакции
                 transaction.rollback();
             }
@@ -101,7 +101,7 @@ public class UserDaoHibernateImpl implements UserDao {
             session.getTransaction().commit();
             System.out.println("Произведено удаление данных из таблицы");
         } catch (RuntimeException e){
-            if (transaction != null) {
+            if (transaction == null) {
                 // откат транзакции
                 transaction.rollback();
             }

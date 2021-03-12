@@ -12,14 +12,14 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     private Util connect;
-    public UserDaoJDBCImpl() {
-    }
+//    public UserDaoJDBCImpl() {
+//    }
 
     public UserDaoJDBCImpl(Util connect){
         this.connect = connect;
     }
 
-    public void createUsersTable() {
+    public void createUsersTable() throws SQLException, ClassNotFoundException {
         try {
             Statement stmt = connect.connect().createStatement();
             connect.connect().setAutoCommit(false);
@@ -29,10 +29,11 @@ public class UserDaoJDBCImpl implements UserDao {
         }
         catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
+            connect.connect().rollback();
         }
     }
 
-    public void dropUsersTable(){
+    public void dropUsersTable() throws SQLException, ClassNotFoundException {
         try {
         Statement stmt = connect.connect().createStatement();
         connect.connect().setAutoCommit(false);
@@ -41,6 +42,7 @@ public class UserDaoJDBCImpl implements UserDao {
         connect.connect().commit();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+            connect.connect().rollback();
           }
     }
 
@@ -58,12 +60,13 @@ public class UserDaoJDBCImpl implements UserDao {
             connect.connect().commit();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+            connect.connect().rollback();
         } finally {
             connect.connect().close();
         }
     }
 
-    public void removeUserById(long id) {
+    public void removeUserById(long id) throws SQLException, ClassNotFoundException {
         try {
             Statement stmt = connect.connect().createStatement();
             connect.connect().setAutoCommit(false);
@@ -76,20 +79,21 @@ public class UserDaoJDBCImpl implements UserDao {
                 System.out.println("Клиент с id = " + id + " из базы удален");
             }else {
                 System.out.println("Клиент с таким id в базе не найден");
+                connect.connect().rollback();
                 resultSet.close();
                 stmt.close();
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+            connect.connect().rollback();
         }
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() throws SQLException, ClassNotFoundException {
         List<User> usersArrey = new ArrayList<>();
 
 try {
     Statement stmt = connect.connect().createStatement();
-
     ResultSet resultSet = stmt.executeQuery("SELECT * FROM test.users");
     while (resultSet.next()) {
         User user = new User();
@@ -109,11 +113,12 @@ try {
         stmt.close();
      }catch (SQLException | ClassNotFoundException e){
             e.printStackTrace();
+            connect.connect().rollback();
         }
         return usersArrey;
     }
 
-    public void cleanUsersTable(){
+    public void cleanUsersTable() throws SQLException, ClassNotFoundException {
         try {
             Statement stmt = connect.connect().createStatement();
             connect.connect().setAutoCommit(false);
@@ -122,6 +127,7 @@ try {
             stmt.close();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
+            connect.connect().rollback();
         }
     }
 }
