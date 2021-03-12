@@ -18,8 +18,8 @@ public class Main {
 //        for (int i = 0; i < 5; i++) {
 //            userService.saveUser("Саня10", "Диманов20", (byte) 370);
 //        }
-        userService.removeUserById(9);
-//        userService.cleanUsersTable();
+//        userService.removeUserById(9);
+        userService.cleanUsersTable();
 
 //        conn.connect();
 //        userService.createUsersTable();

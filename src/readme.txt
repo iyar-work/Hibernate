@@ -202,5 +202,6 @@ git init
  git add --all
  git commit -m "Initial commit"
  git remote add hibernate_begin https://github.com/iyar-work/Hibernate_begin
+ git push hibernate_begin master
 git remote
-git push hibernate_begin master
+

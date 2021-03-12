@@ -3,6 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,39 +56,57 @@ public class UserDaoHibernateImpl implements UserDao {
         user.setLastName(lastName);
         user.setAge(age);
         Session session = new Util().getSessionFactory().openSession();
-        session.beginTransaction();
-        session.persist(user);
-        session.getTransaction().commit();
-        session.close();
-//        sessionFactory.getCurrentSession().save(user);
-//        getSession().save(user);
-//        sessionFactory.getCurrentSession().saveOrUpdate(user);
-//        Transaction transaction = null;
-//        Session session = sessionbbFyactory.getCurrentSession();
-//        session.persist();
-//        transaction = session.beginTransaction();
-//        session.save(user);
-//        transaction.commit();
-//        session.close();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.persist(user);
+            session.getTransaction().commit();
+            session.getTransaction().commit();
+        }catch (RuntimeException e){
+            if (transaction != null) {
+                // откат транзакции
+                transaction.rollback();
+            }
+        }finally {
+            session.close();
+        }
     }
 
     @Override
     public void removeUserById(long id) {
         Session session = new Util().getSessionFactory().openSession();
-        session.beginTransaction();
-        User user = session.get(User.class, id);
-        session.delete(user);
-        session.getTransaction().commit();
-        session.close();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            User user = session.get(User.class, id);
+            session.delete(user);
+            session.getTransaction().commit();
+        }catch (RuntimeException e){
+            if (transaction != null) {
+                // откат транзакции
+                transaction.rollback();
+            }
+        }finally {
+            session.close();
+        }
     }
 
     @Override
     public void cleanUsersTable() {
         Session session = new Util().getSessionFactory().openSession();
-        session.beginTransaction();
-        session.createNativeQuery("DELETE FROM test.User5").executeUpdate();
-        session.getTransaction().commit();
-        session.close();
-        System.out.println("Произведено удаление данных из таблицы");
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.createNativeQuery("DELETE FROM test.User5").executeUpdate();
+            session.getTransaction().commit();
+            System.out.println("Произведено удаление данных из таблицы");
+        } catch (RuntimeException e){
+            if (transaction != null) {
+                // откат транзакции
+                transaction.rollback();
+            }
+        }finally {
+            session.close();
+        }
     }
 }
