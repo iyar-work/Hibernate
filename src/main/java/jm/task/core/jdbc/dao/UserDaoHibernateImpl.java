@@ -30,6 +30,8 @@ public class UserDaoHibernateImpl implements UserDao {
             query = session.createNativeQuery("create table test.User5 (id MEDIUMINT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id), name varchar(256), lastName varchar(256), age int (16))");
         query.executeUpdate();
         System.out.println("Таблица готова!!!");
+        session.disconnect();
+        session.close();
     }
 
     @Override
@@ -38,16 +40,18 @@ public class UserDaoHibernateImpl implements UserDao {
         NativeQuery query;
         Session session = new Util().getSessionFactory().openSession();
             session.beginTransaction();
-            query = session.createNativeQuery("DROP TABLE IF EXISTS test.User5");
+            query = session.createNativeQuery("DROP TABLE IF EXISTS test.users");
 //        Необходимо обновить запрос: query.executeUpdate(). При каких-то изменениях в таблице запрос
 //        следует обновлять, а, скажем, при получении данных из таблицы без её изменения
 //        запрос обновлять не нужно
         query.executeUpdate();
         System.out.println("таблица удалена");
+        session.disconnect();
+        session.close();
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public void saveUser(String name, String lastName, byte age) {
         //а для сохранения лучше использовать метод persist вместо save
         //неочевидный такой момент)
@@ -61,13 +65,13 @@ public class UserDaoHibernateImpl implements UserDao {
             transaction = session.beginTransaction();
             session.persist(user);
             session.getTransaction().commit();
-            session.getTransaction().commit();
         }catch (RuntimeException e){
             if (transaction == null) {
                 // откат транзакции
                 transaction.rollback();
             }
         }finally {
+            session.disconnect();
             session.close();
         }
     }
@@ -87,6 +91,7 @@ public class UserDaoHibernateImpl implements UserDao {
                 transaction.rollback();
             }
         }finally {
+            session.disconnect();
             session.close();
         }
     }
@@ -106,6 +111,7 @@ public class UserDaoHibernateImpl implements UserDao {
                 transaction.rollback();
             }
         }finally {
+            session.disconnect();
             session.close();
         }
     }

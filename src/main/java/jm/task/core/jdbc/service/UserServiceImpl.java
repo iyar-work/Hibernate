@@ -2,16 +2,18 @@ package jm.task.core.jdbc.service;
 
 import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 //import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
+import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 import org.springframework.transaction.annotation.Transactional;
 
 
 //import java.sql.SQLException;
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
 
-    public UserServiceImpl(){
+    public UserServiceImpl() throws SQLException, ClassNotFoundException {
     }
 
     UserDaoHibernateImpl userDaoHibernate = new UserDaoHibernateImpl();
@@ -41,9 +43,11 @@ public class UserServiceImpl implements UserService {
         userDaoHibernate.cleanUsersTable();
     }
 
+//
+//
 //    UserDaoJDBCImpl userDaoJDBC = new UserDaoJDBCImpl();
 //
-//    public void createUsersTable() {
+//    public void createUsersTable() throws SQLException, ClassNotFoundException {
 //        userDaoJDBC.createUsersTable();
 //    }
 //
@@ -55,7 +59,7 @@ public class UserServiceImpl implements UserService {
 //        userDaoJDBC.saveUser(name, lastName, age);
 //    }
 //
-//    public void removeUserById(long id) {
+//    public void removeUserById(long id) throws SQLException, ClassNotFoundException {
 //        userDaoJDBC.removeUserById(id);
 //    }
 //

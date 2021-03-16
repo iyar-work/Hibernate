@@ -5,25 +5,29 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.service.UserServiceImpl;
 import jm.task.core.jdbc.util.Util;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
         // реализуйте алгоритм здесь
         UserServiceImpl userService = new UserServiceImpl();
 //        System.out.println(userService.getAllUsers());
 //        userService.createUsersTable();
 //        userService.dropUsersTable();
 //        System.out.println(userService.getAllUsers());
-//        for (int i = 0; i < 5; i++) {
-//            userService.saveUser("Саня10", "Диманов20", (byte) 370);
-//        }
+        for (int i = 0; i < 15; i++) {
+            userService.saveUser("Саня10", "Диманов20", (byte) 370);
+        }
 //        userService.removeUserById(9);
-        userService.cleanUsersTable();
+//        userService.cleanUsersTable();
 
-//        conn.connect();
+
+//      JDBC
+
 //        userService.createUsersTable();
-//        userService.saveUser("Саня1", "Диманов2", (byte) 28);
+//        userService.saveUser("Саня9", "Диманов9", (byte) 29);
 //        userService.saveUser("Саня3", "Диманов3", (byte) 25);
 //        userService.saveUser("Саня4", "Диманов4", (byte) 68);
 //        userService.saveUser("Саня5", "Диманов5", (byte) 48);
@@ -31,7 +35,7 @@ public class Main {
 //        userService.saveUser("Саня7", "Диманов7", (byte) 47);
 //        System.out.print(userService.getAllUsers());
 //        System.out.println(userService.getAllUsers());
-//        userService.removeUserById(2);
+//        userService.removeUserById(7);
 //        userService.cleanUsersTable();
 //        userService.dropUsersTable();
     }

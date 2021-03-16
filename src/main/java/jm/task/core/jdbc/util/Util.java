@@ -43,20 +43,10 @@ public SessionFactory getSessionFactory (){
             //создаем подключение к базе данных, создаётся одно подключение на программу, но не под каждый запрос
             Configuration configuration = new Configuration().setProperties(properties);
             configuration.addAnnotatedClass(jm.task.core.jdbc.model.User.class);
-
             StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                     .applySettings(configuration.getProperties()).build();
-
             sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-
-//            SessionFactory sessionFactory = new Configuration().addProperties(properties).buildSessionFactory();
-//            Session session = sessionFactory.getCurrentSession();
             System.out.println("Connection succes (Соединение с базой установлено!)");
-//            session.beginTransaction();
-
-              
-
-//              session.getTransaction();
         }catch (Exception e){
             System.out.println("Connection error");
             e.printStackTrace();
@@ -69,19 +59,19 @@ public SessionFactory getSessionFactory (){
 
 
     public Connection connect() throws ClassNotFoundException, SQLException {
+    Connection connection = null;
         try {
             String userName = "root";
             String password = "1";
             String connectionUrl = "jdbc:mysql://localhost:3306/test?serverTimezone=UTC";
             Class.forName("com.mysql.jdbc.Driver");
-
-            Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
+            connection = DriverManager.getConnection(connectionUrl, userName, password);
             System.out.println("К базе подключены!");
-            return connection;
         }  catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new IllegalStateException();
+//            throw new IllegalStateException();
         }
+        return connection;
     }
 
 }
