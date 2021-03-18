@@ -24,11 +24,10 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             connection.setAutoCommit(false);
             stmt.execute("create table users (id MEDIUMINT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id), name varchar(256), lastName varchar(256), age int (16))");
             stmt.close();
-            connection.commit();
-            connection.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
+        } finally {
             connection.rollback();
             connection.close();
         }
@@ -40,13 +39,12 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         connection.setAutoCommit(false);
         stmt.executeUpdate("DROP TABLE IF EXISTS test.users");
         stmt.close();
-        connection.commit();
-        connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+          } finally {
             connection.rollback();
             connection.close();
-          }
+        }
     }
 
     public void saveUser(String name, String lastName, byte age) throws SQLException, ClassNotFoundException {
@@ -63,10 +61,10 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             statement.execute();
             statement.close();
             connection.commit();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
             connection.rollback();
+        } finally {
             connection.close();
         }
     }
@@ -81,18 +79,17 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
                 stmt.executeUpdate("delete FROM test.users where id ='" + id + "'");
                 stmt.close();
                 connection.commit();
-                connection.close();
                 System.out.println("Клиент с id = " + id + " из базы удален");
             }else {
                 System.out.println("Клиент с таким id в базе не найден");
                 resultSet.close();
                 stmt.close();
                 connection.rollback();
-                connection.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
             connection.rollback();
+        } finally {
             connection.close();
         }
     }
@@ -120,12 +117,12 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
         resultSet.close();
         stmt.close();
         connection.commit();
-        connection.close();
      }catch (SQLException e){
             e.printStackTrace();
         connection.rollback();
+        } finally {
         connection.close();
-        }
+          }
         return usersArrey;
     }
 
@@ -136,10 +133,10 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
             stmt.executeUpdate("delete from test.users");
             stmt.close();
             connection.commit();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
             connection.rollback();
+        } finally {
             connection.close();
         }
     }

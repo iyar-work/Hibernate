@@ -16,22 +16,44 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public List<User> getAllUsers(){
+        List <User> users = null;
         Session session = new Util().getSessionFactory().openSession();
-        session.beginTransaction();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
 //        return session.createQuery("from jm.task.core.jdbc.model.User").list();
-        return session.createQuery("from User").list();
+            users = session.createQuery("from User").list();
+        } catch (RuntimeException e){
+            if (transaction == null) {
+                // откат транзакции
+                transaction.rollback();
+            }
+        }finally {
+            session.disconnect();
+            session.close();
+        }
+        return users;
     }
 
     @Override
     public void createUsersTable() {
         NativeQuery query;
         Session session = new Util().getSessionFactory().openSession();
-            session.beginTransaction();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
             query = session.createNativeQuery("create table test.User5 (id MEDIUMINT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id), name varchar(256), lastName varchar(256), age int (16))");
-        query.executeUpdate();
-        System.out.println("Таблица готова!!!");
-        session.disconnect();
-        session.close();
+            query.executeUpdate();
+            System.out.println("Таблица готова!!!");
+        } catch (RuntimeException e){
+            if (transaction == null) {
+                // откат транзакции
+                transaction.rollback();
+            }
+        } finally {
+            session.disconnect();
+            session.close();
+        }
     }
 
     @Override
@@ -39,19 +61,27 @@ public class UserDaoHibernateImpl implements UserDao {
 //        DROP DATABASE your_database;
         NativeQuery query;
         Session session = new Util().getSessionFactory().openSession();
-            session.beginTransaction();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
             query = session.createNativeQuery("DROP TABLE IF EXISTS test.users");
 //        Необходимо обновить запрос: query.executeUpdate(). При каких-то изменениях в таблице запрос
 //        следует обновлять, а, скажем, при получении данных из таблицы без её изменения
 //        запрос обновлять не нужно
-        query.executeUpdate();
-        System.out.println("таблица удалена");
-        session.disconnect();
-        session.close();
+            query.executeUpdate();
+            System.out.println("таблица удалена");
+        } catch (RuntimeException e){
+            if (transaction == null) {
+                // откат транзакции
+                transaction.rollback();
+            }
+        }finally {
+            session.disconnect();
+            session.close();
+        }
     }
 
     @Override
-//    @Transactional
     public void saveUser(String name, String lastName, byte age) {
         //а для сохранения лучше использовать метод persist вместо save
         //неочевидный такой момент)
